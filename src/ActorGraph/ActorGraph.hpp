@@ -28,6 +28,8 @@ class ActorGraph {
     void BFS(const string& fromActor, const string& toActor,
              string& shortestPath);
 
+    string getPath(string root, ActorNode* curr, unordered_map<string, ActorNode*>);
+
     /* TODO */
     ~ActorGraph();
 };

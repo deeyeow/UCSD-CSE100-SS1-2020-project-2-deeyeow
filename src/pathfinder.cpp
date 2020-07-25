@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
         string actor1(actorPair[0]);
         string actor2(actorPair[1]);
 
-        // output the shorest path for each line
+        // output the shortest path for each line
         string shortestPath = "";
         graph->BFS(actor1, actor2, shortestPath);
         if (shortestPath.length() > 0) {

@@ -11,7 +11,6 @@ class ActorNode {
     unordered_set<string> movies;
     string name;
     bool visited;
-
     pair<string,string> parent;
 
   public:
@@ -21,6 +20,18 @@ class ActorNode {
     }
 
     void addMovie(string movieName) { movies.emplace(movieName); }
+    unordered_set<string>* getMovies() { return &movies; }
+
+    string getName() { return name; }
+
+    void markVisited() { visited = true; }
+    bool isVisited() { return visited; }
+
+    void setParent(string parentName, string movieName) {
+        parent.first = parentName;
+        parent.second = movieName;
+    }
+    pair<string,string> getParent() { return parent; }
 
     // out of scope, no need to delete unordered_set
     ~ActorNode() {}
