@@ -107,7 +107,7 @@ void ActorGraph::BFS(const string& fromActor, const string& toActor,
             // end BFS
             break;
         }
-        //cout << "Target not found, going thru connections" << endl;
+        // cout << "Target not found, going thru connections" << endl;
         // iterate over all movies actor has been in
         for (auto movie : *curr->getMovies()) {
             // iterate over all actors who have been in the same movie
@@ -121,15 +121,15 @@ void ActorGraph::BFS(const string& fromActor, const string& toActor,
                 if (!connection->isVisited()) {
                     // mark connection as visited
                     connection->markVisited();
-                    //cout << "Visiting connection: " << connection->getName()
-                         //<< endl;
+                    // cout << "Visiting connection: " << connection->getName()
+                    //<< endl;
                     // set connection's parent to curr node
                     connection->setParent(curr->getName(), movie);
                     // push into queue for BFS
                     queue.push(nameToActorNode[actor]);
                 }
-                //cout << "Already visited: " << connection->getName()
-                     //<< ", skipping" << endl;
+                // cout << "Already visited: " << connection->getName()
+                //<< ", skipping" << endl;
             }
         }
     }
