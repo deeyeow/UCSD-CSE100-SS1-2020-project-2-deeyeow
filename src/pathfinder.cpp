@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     graphFile.close();
     cout << "Done." << endl;
 
-    // write the shorest path of each given pair to the output file
+    // write the shortest path of each given pair to the output file
     ifstream infile(pairs);
     ofstream outfile(output);
     bool haveHeader = false;

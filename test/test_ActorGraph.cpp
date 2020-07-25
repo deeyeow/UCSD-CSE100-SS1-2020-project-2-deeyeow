@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <fstream>
 
 #include "ActorGraph.hpp"
 
@@ -66,5 +67,32 @@ TEST(ActorGraphTests, GetPath) {
     nameToActor.emplace("actor3", actor3);
     nameToActor.emplace("actor4", actor4);
 
-    ASSERT_EQ(graph.getPath("actor1", actor4, nameToActor), "actor1--movie2-->actor2--movie3-->actor3--movie4-->actor4");
+    ASSERT_EQ(graph.getPath("actor1", actor4, nameToActor),
+              "(actor1)--[movie2]-->(actor2)--[movie3]-->(actor3)--[movie4]-->("
+              "actor4)");
+}
+
+TEST(ActorGraphTests, BFS) {
+    // build the actor graph from the input file
+    ActorGraph* graph = new ActorGraph();
+    string graphFileName = "../../data/pathfinder1_graph.tsv";
+    ifstream graphFile(graphFileName);
+    cout << "Found file, building graph" << endl;
+    if (!graph->buildGraph(graphFile)) {
+        cerr << "Failed to read " << graphFileName << endl;
+    }
+    cout << "Done" << endl;
+    graphFile.close();
+
+    string actor1 = "Nicole Kidman";
+    string actor2 = "Keanu Reeves";
+
+    string shortestPath = "";
+    cout << "Doing BFS" << endl;
+    graph->BFS(actor1, actor2, shortestPath);
+    cout << "Done" << endl;
+
+    ASSERT_EQ(shortestPath,
+              "(Nicole Kidman)--[The Human Stain#@2003]-->(Anthony "
+              "Hopkins)--[Bram Stoker's Dracula#@1992]-->(Keanu Reeves)");
 }

@@ -2,8 +2,8 @@
 #define ACTORGRAPH_HPP
 
 #include <iostream>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 #include "ActorNode.hpp"
 
 using namespace std;
@@ -16,7 +16,6 @@ class ActorGraph {
     int totalNodes;
     int visitedNodes;
 
-
   public:
     /* TODO */
     ActorGraph();
@@ -28,7 +27,15 @@ class ActorGraph {
     void BFS(const string& fromActor, const string& toActor,
              string& shortestPath);
 
-    string getPath(string root, ActorNode* curr, unordered_map<string, ActorNode*>);
+    string getPath(string root, ActorNode* curr,
+                   unordered_map<string, ActorNode*>);
+
+    void resetTree() {
+        for (auto node : nameToActorNode) {
+            node.second->markUnvisited();
+            node.second->resetParent();
+        }
+    }
 
     /* TODO */
     ~ActorGraph();
