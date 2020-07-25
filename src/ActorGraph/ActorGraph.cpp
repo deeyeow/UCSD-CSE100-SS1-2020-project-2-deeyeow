@@ -7,7 +7,7 @@
 
 using namespace std;
 
-ActorGraph::ActorGraph() {}
+ActorGraph::ActorGraph() { totalNodes = visitedNodes = 0; }
 
 /* Build the actor graph from dataset file.
  * Each line of the dataset file must be formatted as:
@@ -48,6 +48,31 @@ bool ActorGraph::buildGraph(istream& is) {
         int year = stoi(record[2]);
 
         // TODO: we have an actor/movie relationship to build the graph
+        title += " " + to_string(year);
+
+        // associate actor with movie, put into map for direct access (vertex)
+        ActorNode* tempNode;
+        if (nameToActorNode.count(actor) == 0)
+            tempNode = new ActorNode(actor);
+        else
+            tempNode = nameToActorNode[actor];
+        tempNode->addMovie(title);
+        nameToActorNode[actor] = tempNode;
+
+        // associate movie with actor, put into map for direct access (edge)
+        unordered_set<string>* tempSet;
+        if (movieToActorSet.count(title) == 0)
+            tempSet = new unordered_set<string>();
+        else
+            tempSet = movieToActorSet[title];
+        tempSet->emplace(actor);
+        movieToActorSet[title] = tempSet;
+
+        /*
+        if (movieToActorSet[title]->count(actor) != 0) {
+            cout << actor << " played in " << title << endl;
+        }
+        */
     }
 
     // if failed to read the file, clear the graph and return
@@ -64,4 +89,11 @@ void ActorGraph::BFS(const string& fromActor, const string& toActor,
                      string& shortestPath) {}
 
 /* TODO */
-ActorGraph::~ActorGraph() {}
+ActorGraph::~ActorGraph() {
+    for (auto movie : movieToActorSet) {
+        delete movie.second;
+    }
+    for (auto actor : nameToActorNode) {
+        delete actor.second;
+    }
+}

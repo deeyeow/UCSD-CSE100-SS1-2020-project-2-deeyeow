@@ -3,12 +3,19 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include "ActorNode.hpp"
 
 using namespace std;
 
 class ActorGraph {
   protected:
     // TODO: add data structures used in actor graph
+    unordered_map<string, unordered_set<string>*> movieToActorSet;
+    unordered_map<string, ActorNode*> nameToActorNode;
+    int totalNodes;
+    int visitedNodes;
+
 
   public:
     /* TODO */
