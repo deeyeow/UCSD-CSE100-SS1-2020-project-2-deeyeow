@@ -1,0 +1,8 @@
+(actor)--[movie#@year]-->(actor)--...
+(Nicole Kidman)--[The Beguiled#@2017]-->(Elle Fanning)--[The Neon Demon#@2016]-->(Keanu Reeves)
+(Tim Roth)--[Emmett's Mark#@2002]-->(Gabriel Byrne)--[Played#@2006]-->(Vinnie Jones)
+(Will Smith)--[Men in Black#@1997]-->(Vincent D'Onofrio)--[Fire with Fire#@2012]-->(Bruce Willis)
+(Christopher Walken)--[The Prophecy#@1995]-->(Virginia Madsen)--[The Magic of Belle Isle#@2012]-->(Morgan Freeman)
+(Courteney Cox)--[Scream 2#@1997]-->(Neve Campbell)--[Intimate Affairs#@2001]-->(Dermot Mulroney)--[I Still See You#@2018]-->(Richard Harmon)
+(Cameron Diaz)--[Shrek#@2001]-->(John Lithgow)--[Footloose#@1984]-->(Dianne Wiest)--[Cookie#@1989]-->(Emily Lloyd)
+(Kyra Sedgwick)--[Big Sky#@2015]-->(Frank Grillo)

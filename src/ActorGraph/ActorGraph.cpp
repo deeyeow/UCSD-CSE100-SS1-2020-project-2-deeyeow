@@ -9,7 +9,7 @@
 
 using namespace std;
 
-ActorGraph::ActorGraph() { totalNodes = visitedNodes = 0; }
+ActorGraph::ActorGraph() {}
 
 /* Build the actor graph from dataset file.
  * Each line of the dataset file must be formatted as:
@@ -52,6 +52,27 @@ bool ActorGraph::buildGraph(istream& is) {
         // TODO: we have an actor/movie relationship to build the graph
         title += "#@" + to_string(year);
 
+        // optimized build using find
+        // associate actor with movie, put into map for direct access (vertex)
+        ActorNode* tempNode;
+        if (nameToActorNode.find(actor) == nameToActorNode.end())
+            tempNode = new ActorNode(actor);
+        else
+            tempNode = nameToActorNode[actor];
+        tempNode->addMovie(title);
+        nameToActorNode[actor] = tempNode;
+
+        // associate movie with actor, put into map for direct access (edge)
+        unordered_set<string>* tempSet;
+        if (movieToActorSet.find(title) == movieToActorSet.end())
+            tempSet = new unordered_set<string>();
+        else
+            tempSet = movieToActorSet[title];
+        tempSet->emplace(actor);
+        movieToActorSet[title] = tempSet;
+
+        /*
+        // unoptimized build using count
         // associate actor with movie, put into map for direct access (vertex)
         ActorNode* tempNode;
         if (nameToActorNode.count(actor) == 0)
@@ -69,6 +90,7 @@ bool ActorGraph::buildGraph(istream& is) {
             tempSet = movieToActorSet[title];
         tempSet->emplace(actor);
         movieToActorSet[title] = tempSet;
+        */
     }
 
     // if failed to read the file, clear the graph and return
@@ -80,7 +102,170 @@ bool ActorGraph::buildGraph(istream& is) {
     return true;
 }
 
-/* TODO */
+// double BFS
+void ActorGraph::BFS(const string& fromActor, const string& toActor,
+                     string& shortestPath) {
+    // create queue for BFS
+    queue<ActorNode*> queue;
+
+    // get first actor node
+    ActorNode* from = nameToActorNode[fromActor];
+    // mark first node visited
+    from->markVisitedFrom();
+    // push onto queue
+    queue.push(nameToActorNode[fromActor]);
+
+    // get last actor node
+    ActorNode* to = nameToActorNode[toActor];
+    // mark last node visited
+    to->markVisitedTo();
+    // push onto queue
+    queue.push(nameToActorNode[toActor]);
+
+    // start BFS
+    while (!queue.empty()) {
+        // pop first element
+        ActorNode* curr = queue.front();
+        queue.pop();
+        // get which end of BFS
+        bool isFrom = curr->isVisitedFrom();
+
+        // iterate over all movies actor has been in
+        for (auto movie : *curr->getMovies()) {
+            // iterate over all actors who have been in the same movie
+            for (auto actor : *movieToActorSet[movie]) {
+                // get connection node
+                ActorNode* connection = nameToActorNode[actor];
+
+                // if From end of BFS, check if visited by End
+                if (isFrom) {
+                    // found node visited from End, return
+                    if (connection->isVisitedTo()) {
+                        cout << "Target found from From end, now getting path"
+                             << endl;
+                        // found from From end of BFS, get path
+                        shortestPath =
+                            getPath(fromActor, toActor, movie, connection, curr,
+                                    nameToActorNode, isFrom);
+                        // reset visited and parents
+                        resetTree();
+                        // end BFS
+                        goto outOfLoops;
+                    }
+                    // not found node, queue unvisited nodes
+                    if (!connection->isVisitedFrom()) {
+                        // mark connection as visited
+                        connection->markVisitedFrom();
+                        // cout << "Visiting connection: " <<
+                        // connection->getName()
+                        //<< endl;
+                        // set connection's parent to curr node
+                        connection->setParent(curr->getName(), movie);
+                        // push into queue for BFS
+                        queue.push(nameToActorNode[actor]);
+                    }
+                }
+                // if End end of BFS, check if visited by From
+                else {
+                    // found node visited from From, return
+                    if (connection->isVisitedFrom()) {
+                        cout << "Target found from End end, now getting path"
+                             << endl;
+                        // found from From end of BFS, get path
+                        shortestPath =
+                            getPath(fromActor, toActor, movie, connection, curr,
+                                    nameToActorNode, isFrom);
+                        // reset visited and parents
+                        resetTree();
+                        // end BFS
+                        goto outOfLoops;
+                    }
+                    // not found node, queue unvisited nodes
+                    if (!connection->isVisitedTo()) {
+                        // mark connection as visited
+                        connection->markVisitedTo();
+                        // cout << "Visiting connection: " <<
+                        // connection->getName()
+                        //<< endl;
+                        // set connection's parent to curr node
+                        connection->setParent(curr->getName(), movie);
+                        // push into queue for BFS
+                        queue.push(nameToActorNode[actor]);
+                    }
+                }
+            }
+        }
+    }
+outOfLoops:;
+}
+
+string ActorGraph::getPath(string fromName, string toName, string movie,
+                           ActorNode* connection, ActorNode* curr,
+                           unordered_map<string, ActorNode*> nameToActor,
+                           bool isFrom) {
+    stack<string> pathFrom;
+    queue<string> pathTo;
+    string ans = "";
+
+    ActorNode* temp;
+
+    if (isFrom)
+        temp = curr;
+    else
+        temp = connection;
+
+    // root has no parent, backtrack until at root
+    // can also check for root name
+    while (temp->getName() != fromName) {
+        // push curr actor
+        pathFrom.push(temp->getName());
+        // get parent info
+        pair<string, string> parent = temp->getParent();
+        // push movie
+        pathFrom.push(parent.second);
+        // process parent
+        temp = nameToActor[parent.first];
+    }
+    // at root, push final actor
+    pathFrom.push(temp->getName());
+
+    // now print in correct order
+    // (elements will be 2*N + 1)
+    while (pathFrom.size() > 1) {
+        ans += "(" + pathFrom.top() + ")";
+        pathFrom.pop();
+        ans += "--";
+        ans += "[" + pathFrom.top() + "]";
+        pathFrom.pop();
+        ans += "-->";
+    }
+    ans += "(" + pathFrom.top() + ")";
+
+    // process other end of BFS
+    if (isFrom)
+        temp = connection;
+    else
+        temp = curr;
+
+    ans += "--";
+    ans += "[" + movie + "]";
+    ans += "-->";
+
+    while (temp->getName() != toName) {
+        // get parent info
+        pair<string, string> parent = temp->getParent();
+        ans += "(" + temp->getName() + ")";
+        ans += "--";
+        ans += "[" + parent.second + "]";
+        ans += "-->";
+        temp = nameToActor[parent.first];
+    }
+    ans += "(" + temp->getName() + ")";
+    return ans;
+}
+
+/*
+// single BFS
 void ActorGraph::BFS(const string& fromActor, const string& toActor,
                      string& shortestPath) {
     // create queue for BFS
@@ -167,6 +352,7 @@ string ActorGraph::getPath(string rootName, ActorNode* curr,
     ans += "(" + path.top() + ")";
     return ans;
 }
+*/
 
 /* TODO */
 ActorGraph::~ActorGraph() {

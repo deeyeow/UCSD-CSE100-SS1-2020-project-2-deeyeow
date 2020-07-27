@@ -1,0 +1,8 @@
+(actor)--[movie#@year]-->(actor)--...
+(Nicole Kidman)--[Strangerland#@2015]-->(Hugo Weaving)--[The Matrix#@1999]-->(Keanu Reeves)
+(Tim Roth)--[Emmett's Mark#@2002]-->(Gabriel Byrne)--[Played#@2006]-->(Vinnie Jones)
+(Will Smith)--[Concussion#@2015]-->(Alec Baldwin)--[Mercury Rising#@1998]-->(Bruce Willis)
+(Christopher Walken)--[Wedding Crashers#@2005]-->(Owen Wilson)--[The Big Bounce#@2004]-->(Morgan Freeman)
+(Courteney Cox)--[Scream 2#@1997]-->(Neve Campbell)--[Intimate Affairs#@2001]-->(Dermot Mulroney)--[I Still See You#@2018]-->(Richard Harmon)
+(Cameron Diaz)--[Shrek#@2001]-->(John Lithgow)--[Footloose#@1984]-->(Dianne Wiest)--[Cookie#@1989]-->(Emily Lloyd)
+(Kyra Sedgwick)--[Big Sky#@2015]-->(Frank Grillo)
